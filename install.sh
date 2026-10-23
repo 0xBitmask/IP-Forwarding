@@ -19,8 +19,13 @@ mkdir -p "$INSTALL_DIR"
 
 # Copy files
 cp "$SCRIPT_DIR/ip_forward.sh" "$INSTALL_DIR/"
+cp "$SCRIPT_DIR/uninstall.sh" "$INSTALL_DIR/"
 cp "$SCRIPT_DIR/config.conf" "$INSTALL_DIR/"
-chmod +x "$INSTALL_DIR/ip_forward.sh"
+chmod +x "$INSTALL_DIR/ip_forward.sh" "$INSTALL_DIR/uninstall.sh"
+
+# Install the ip-forwarding command
+mkdir -p /usr/local/bin
+ln -sfn "$INSTALL_DIR/ip_forward.sh" /usr/local/bin/ip-forwarding
 
 # Install systemd service
 cp "$SCRIPT_DIR/$SERVICE_FILE" /etc/systemd/system/
@@ -42,14 +47,15 @@ echo "  Edit config:    nano $INSTALL_DIR/config.conf"
 echo "  Enable:         systemctl start ip-forwarding"
 echo "  Disable:        systemctl stop ip-forwarding"
 echo "  Auto-start:     systemctl enable ip-forwarding"
-echo "  Status:         $INSTALL_DIR/ip_forward.sh status"
-echo "  Advertise:      $INSTALL_DIR/ip_forward.sh advertise"
-echo "  Test:           $INSTALL_DIR/ip_forward.sh test"
+echo "  Status:         ip-forwarding status"
+echo "  Advertise:      ip-forwarding advertise"
+echo "  Test:           ip-forwarding test"
+echo "  Uninstall:      ip-forwarding uninstall"
 echo ""
 echo "Step-by-step:"
 echo "  1. Edit $INSTALL_DIR/config.conf (set LAN_IF or leave empty for auto-detect; set TARGET_SERVER)"
-echo "  2. Run: $INSTALL_DIR/ip_forward.sh test   (verify Orange Pi can reach the web server)"
-echo "  3. Run: $INSTALL_DIR/ip_forward.sh advertise"
+echo "  2. Run: ip-forwarding test   (verify Orange Pi can reach the web server)"
+echo "  3. Run: ip-forwarding advertise"
 echo "  4. Approve route in Tailscale admin: https://login.tailscale.com/admin/machines"
 echo "  5. On your laptop: sudo tailscale up --accept-routes"
 echo "  6. Open http://192.168.1.40 in your browser"

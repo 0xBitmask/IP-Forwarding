@@ -11,7 +11,8 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
 CONFIG_FILE="${SCRIPT_DIR}/config.conf"
 LOG_FILE="/var/log/ip_forwarding.log"
 
@@ -243,13 +244,14 @@ test_forwarding() {
 }
 
 usage() {
-    echo "Usage: $0 {enable|disable|status|advertise|test}"
+    echo "Usage: $0 {enable|disable|status|advertise|test|uninstall}"
     echo ""
     echo "  enable    - Enable IP forwarding from Tailscale to LAN"
     echo "  disable   - Disable IP forwarding"
     echo "  status    - Show current forwarding status"
     echo "  advertise - Advertise LAN subnet route to Tailscale"
     echo "  test      - Run connectivity test"
+    echo "  uninstall - Remove IP Forwarding from this system"
     echo ""
     echo "Configuration: $CONFIG_FILE"
     echo "Log file:      $LOG_FILE"
@@ -270,6 +272,12 @@ case "${1:-}" in
         ;;
     test)
         test_forwarding
+        ;;
+    uninstall)
+        if [[ -x "${SCRIPT_DIR}/uninstall.sh" ]]; then
+            exec "${SCRIPT_DIR}/uninstall.sh"
+        fi
+        die "Uninstall script not found: ${SCRIPT_DIR}/uninstall.sh"
         ;;
     *)
         usage

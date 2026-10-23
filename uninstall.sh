@@ -8,13 +8,19 @@ INSTALL_DIR="/opt/ip_forwarding"
 
 echo "=== Uninstalling IP Forwarding ==="
 
+# Remove forwarding rules before deleting the scripts
+if [[ -x "$INSTALL_DIR/ip_forward.sh" ]]; then
+    "$INSTALL_DIR/ip_forward.sh" disable >/dev/null 2>&1 || true
+fi
+
 # Stop and disable service
 systemctl stop ip-forwarding 2>/dev/null || true
 systemctl disable ip-forwarding 2>/dev/null || true
 
-# Remove files
+# Remove files and command
 rm -f /etc/systemd/system/ip-forwarding.service
 rm -f /etc/sysctl.d/99-ip-forwarding.conf
+rm -f /usr/local/bin/ip-forwarding
 rm -rf "$INSTALL_DIR"
 
 systemctl daemon-reload
