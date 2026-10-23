@@ -1,0 +1,13 @@
+[Unit]
+Description=IP Forwarding from Tailscale to LAN (Orange Pi Zero 3)
+After=network-online.target tailscaled.service
+Wants=network-online.target tailscaled.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/opt/ip_forwarding/ip_forward.sh enable
+ExecStop=/opt/ip_forwarding/ip_forward.sh disable
+
+[Install]
+WantedBy=multi-user.target
